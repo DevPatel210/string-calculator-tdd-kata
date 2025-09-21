@@ -27,11 +27,19 @@ const parseInput = (numbers) => {
 };
 
 /**
- * Validates the numbers and throws an exception if any are negative.
+ * Validates the numbers and throws an exception if any are negative or have invalid characters.
  * @param {number[]} numbersArray - An array of parsed numbers.
  */
 const validateNumbers = (numbersArray) => {
-  const negativeNumbers = numbersArray.filter((num) => num < 0);
+  const invalidEntries = numbersArray.filter(
+    (num) =>
+      isNaN(num) || /[a-zA-Z!@#$%^&*()_+\[\]{};':"\\|,.<>\/?`~]/.test(num)
+  );
+  if (invalidEntries.length > 0) {
+    throw new Error(`invalid input characters ${invalidEntries.join(", ")}`);
+  }
+
+  const negativeNumbers = numbersArray.filter((num) => Number(num) < 0);
   if (negativeNumbers.length > 0) {
     throw new Error(
       `negative numbers not allowed ${negativeNumbers.join(", ")}`
@@ -55,13 +63,13 @@ const add = (numbers) => {
   const { delimiter, numbersToProcess } = parseInput(numbers);
 
   // Split the string of numbers using the determined delimiter.
-  const numbersArray = numbersToProcess.split(delimiter).map(Number);
+  const numbersArray = numbersToProcess.split(delimiter);
 
   // Validate for negative numbers before summing.
   validateNumbers(numbersArray);
 
   // sum the numbers.
-  return numbersArray.reduce((sum, current) => sum + current, 0);
+  return numbersArray.map(Number).reduce((sum, current) => sum + current, 0);
 };
 
 module.exports = {

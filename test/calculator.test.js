@@ -71,6 +71,14 @@ describe("add", () => {
     );
   });
 
+  it("should return the exception if any character apart from numbers and delimiter is present", () => {
+    expect(() => add("ab")).to.throw("invalid input characters ab");
+    expect(() => add("A+2")).to.throw("invalid input characters A+");
+    expect(() => add("A+c")).to.throw("invalid input characters A+c");
+    expect(() => add("A,2,b,4,$")).to.throw("invalid input characters A, b, $");
+    expect(() => add("1,2,c,4")).to.throw("invalid input characters c");
+  });
+
   // custom delimiters.
   it("should support a custom single-character delimiter", () => {
     expect(add("//;\n5")).to.equal(5);
@@ -81,8 +89,8 @@ describe("add", () => {
 
   // invalid delimiter passed exception
   it("should throw an exceptoion if another character than mentioned as delimiter is used", () => {
-    expect(() => add("//*\n1*2@3")).to.throw("invalid delimiter passed");
-    expect(() => add("///\n1/2\n3")).to.throw("invalid delimiter passed");
+    expect(() => add("//*\n1*2@3")).to.throw("invalid input characters 2@3");
+    expect(() => add("///\n1/2*3")).to.throw("invalid input characters 2*3");
   });
 
   // negative numbers with custom delimiter
@@ -97,7 +105,7 @@ describe("add", () => {
   });
 
   // multicharacter custom delimiters.
-  it("should support a custom single-character delimiter", () => {
+  it("should support a custom multicharacter delimiter", () => {
     expect(add("//%%\n1%%2")).to.equal(3);
     expect(add("//#*#\n1#*#2#*#3")).to.equal(6);
   });
