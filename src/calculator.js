@@ -69,7 +69,10 @@ const add = (numbers) => {
   validateNumbers(numbersArray);
 
   // sum the numbers.
-  return numbersArray.map(Number).reduce((sum, current) => sum + current, 0);
+  return numbersArray
+    .map(Number)
+    .filter((num) => num <= 1000)
+    .reduce((sum, current) => sum + current, 0);
 };
 
 module.exports = {

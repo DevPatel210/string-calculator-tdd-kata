@@ -79,6 +79,22 @@ describe("add", () => {
     expect(() => add("1,2,c,4")).to.throw("invalid input characters c");
   });
 
+  it("should skip values greater than 1000 in different scenarios", () => {
+    expect(add("1001")).to.equal(0);
+    expect(add("5432")).to.equal(0);
+    expect(add("1000,5")).to.equal(1005);
+    expect(add("1000\n5")).to.equal(1005);
+    expect(add("2100,5")).to.equal(5);
+    expect(add("2100\n5")).to.equal(5);
+    expect(add("2,999,2100,5,1001")).to.equal(1006);
+    expect(add("2\n999\n2100,5\n1001")).to.equal(1006);
+    expect(() => add("A1000,5")).to.throw("invalid input characters A1000");
+    expect(() => add("A,2110,b,4,$")).to.throw(
+      "invalid input characters A, b, $"
+    );
+    expect(() => add("1,808,c,1200")).to.throw("invalid input characters c");
+  });
+
   // custom delimiters.
   it("should support a custom single-character delimiter", () => {
     expect(add("//;\n5")).to.equal(5);
