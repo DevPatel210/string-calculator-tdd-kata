@@ -122,23 +122,69 @@ describe("add", () => {
 
   // multicharacter custom delimiters.
   it("should support a custom multicharacter delimiter", () => {
-    expect(add("//%%\n1%%2")).to.equal(3);
-    expect(add("//#*#\n1#*#2#*#3")).to.equal(6);
+    expect(add("//[%%]\n1%%2")).to.equal(3);
+    expect(add("//[#*#]\n1#*#2#*#3")).to.equal(6);
   });
 
   // invalid multicharacter delimiter passed exception
   it("should throw an exceptoion if invalid multicharacter delimiter is used", () => {
-    expect(() => add("//%%\n1%!2")).to.throw("invalid delimiter passed");
-    expect(() => add("//@@\n1@@2@$3")).to.throw("invalid delimiter passed");
+    expect(() => add("//[%%]\n1%!2")).to.throw("invalid input characters 1%!2");
+    expect(() => add("//[@@]\n1@@2@$3")).to.throw(
+      "invalid input characters 2@$3"
+    );
   });
 
   // negative numbers with custom multicharacter delimiter
   it("should show all negative numbers in the exception message with custom multicharacter delimiter as well", () => {
-    expect(() => add("//**\n1**-2**3**-4**5")).to.throw(
+    expect(() => add("//[**]\n1**-2**3**-4**5")).to.throw(
       "negative numbers not allowed -2, -4"
     );
-    expect(() => add("//@#\n1@#-2@#3@#-4@#5")).to.throw(
+    expect(() => add("//[@#]\n1@#-2@#3@#-4@#5")).to.throw(
       "negative numbers not allowed -2, -4"
     );
+  });
+
+  // multiple custom delimiters (supporting both single and multicharacter).
+  it("should support a custom multicharacter delimiter", () => {
+    expect(add("//[*][%%]\n1%%2")).to.equal(3);
+    expect(add("//[#*#][^@]\n1#*#2^@4#*#3")).to.equal(10);
+    expect(add("//[*][&!][^][%%]\n1*2*3&!4^5%%6^7")).to.equal(28);
+  });
+
+  // invalid multiple delimiter passed exception
+  it("should throw an exceptoion if invalid multiple delimiter is used", () => {
+    expect(() => add("//[%%][*]\n1%!2*3")).to.throw(
+      "invalid input characters 1%!2"
+    );
+    expect(() => add("//[@@][##]\n1@@2@$3##4")).to.throw(
+      "invalid input characters 2@$3"
+    );
+  });
+
+  // negative numbers with custom multiple delimiter
+  it("should show all negative numbers in the exception message with custom multiple delimiter", () => {
+    expect(() => add("//[**][#][%%]\n1**-2#3%%-4#5")).to.throw(
+      "negative numbers not allowed -2, -4"
+    );
+    expect(() => add("//[@#][!][**]\n1**-2@#3!-4@#5")).to.throw(
+      "negative numbers not allowed -2, -4"
+    );
+  });
+
+  // invalid delimiter format provided
+  it("should throw exception incase the delimiter is not formatted properly", () => {
+    expect(() => add("//**\n1**2**5")).to.throw("invalid delimiter format");
+    expect(() => add("//*^*\n1*^*2**5")).to.throw("invalid delimiter format");
+    expect(() => add("//[**][#]%\n1**2#3%4#5")).to.throw(
+      "invalid delimiter format"
+    );
+    expect(() => add("//[@#][!][]\n1**2@#3!4@#5")).to.throw(
+      "invalid delimiter format"
+    );
+    expect(() => add("//[@#]![*]\n1*2@#3!4@#5")).to.throw(
+      "invalid delimiter format"
+    );
+    expect(() => add("//[@#\n2@#4@#5")).to.throw("invalid delimiter format");
+    expect(() => add("//@#]\n2@#4@#5")).to.throw("invalid delimiter format");
   });
 });

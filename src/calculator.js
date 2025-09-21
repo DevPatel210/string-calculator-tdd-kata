@@ -7,16 +7,52 @@
  * parsed delimiter and the string of numbers to process.
  */
 const parseInput = (numbers) => {
-  // Regex to match the custom delimiter format "//[delimiter]\n[numbers...]"
-  const customDelimiterRegex = /^\/\/([^\n])\n(.*)/;
-  const match = numbers.match(customDelimiterRegex);
+  // Regex for multiple/multicharacter delimiters: //[delim1][delim2]\n...
+  const multipleDelimiterRegex = /^\/\/(\[(.+?)\])+\n/;
+  const singleDelimiterRegex = /^\/\/(.)\n(.*)/;
 
-  if (match) {
-    const delimiter = new RegExp(`[${match[1]}]`);
-    return {
-      delimiter: delimiter,
-      numbersToProcess: match[2],
-    };
+  if (numbers.startsWith("//")) {
+    // Custom delimiter condition
+    if (numbers.match(multipleDelimiterRegex)) {
+      // Check for multiple delimiters
+      // Extracting delimiters between // and \n
+      const delimPart = numbers.slice(2, numbers.indexOf("\n"));
+      // If any character outside [] exists, it's invalid
+      const invalidDelims = delimPart.replace(/\[(.*?)\]/g, "");
+      if (invalidDelims.trim().length > 0) {
+        throw new Error("invalid delimiter format");
+      }
+      const delimMatches = [...delimPart.matchAll(/\[(.*?)\]/g)];
+      if (!delimMatches.length) {
+        throw new Error("invalid delimiter format");
+      }
+      const delimiters = delimMatches.map((m) => m[1]);
+      // Check for empty delimiters
+      if (delimiters.some((d) => d.length === 0)) {
+        throw new Error("invalid delimiter format");
+      }
+      // Escape delimiters for regex
+      const escaped = delimiters.map((d) =>
+        d.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
+      );
+      const delimiter = new RegExp(escaped.join("|"), "g");
+      return {
+        delimiter,
+        numbersToProcess: numbers.slice(numbers.indexOf("\n") + 1),
+      };
+    } else if (numbers.match(singleDelimiterRegex)) {
+      // Single character delimiter
+      const match = numbers.match(singleDelimiterRegex);
+      const delimiter = new RegExp(
+        `[${match[1].replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}]`
+      );
+      return {
+        delimiter,
+        numbersToProcess: match[2],
+      };
+    } else {
+      throw new Error("invalid delimiter format");
+    }
   } else {
     // Default delimiters are comma and newline.
     return {
