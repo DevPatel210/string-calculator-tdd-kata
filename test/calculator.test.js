@@ -89,10 +89,10 @@ describe("add", () => {
   it("should show all negative numbers in the exception message with custom delimiter as well", () => {
     expect(() => add("//*\n-5")).to.throw("negative numbers not allowed -5");
     expect(() => add("//*\n1*-2*3*-4*5")).to.throw(
-      "negative numbers not allowed -2,-4"
+      "negative numbers not allowed -2, -4"
     );
     expect(() => add("//@\n1@-2@3@-4@5")).to.throw(
-      "negative numbers not allowed -2,-4"
+      "negative numbers not allowed -2, -4"
     );
   });
 
@@ -111,10 +111,10 @@ describe("add", () => {
   // negative numbers with custom multicharacter delimiter
   it("should show all negative numbers in the exception message with custom multicharacter delimiter as well", () => {
     expect(() => add("//**\n1**-2**3**-4**5")).to.throw(
-      "negative numbers not allowed -2,-4"
+      "negative numbers not allowed -2, -4"
     );
     expect(() => add("//@#\n1@#-2@#3@#-4@#5")).to.throw(
-      "negative numbers not allowed -2,-4"
+      "negative numbers not allowed -2, -4"
     );
   });
 });
