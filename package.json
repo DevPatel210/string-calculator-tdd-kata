@@ -1,0 +1,15 @@
+{
+  "name": "string-calculator-tdd-kata",
+  "version": "1.0.0",
+  "description": "Incubyte TDD Assessment",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "chai": "^6.0.1",
+    "mocha": "^11.7.2"
+  }
+}
